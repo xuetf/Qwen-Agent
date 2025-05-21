@@ -34,7 +34,11 @@ class MyImageGen(BaseTool):
 
 
 def init_agent_service():
-    llm_cfg = {'model': 'qwen-max'}
+    llm_cfg = {
+        'api_key': '1870025730743341146',
+        'model': 'deepseek-r1-friday',# 'qwen-max-latest',
+        'model_server': 'https://aigc.sankuai.com/v1/openai/native',  # base_url, also known as api_base
+    }
     system = ("According to the user's request, you first draw a picture and then automatically "
               'run code to download the picture and select an image operation from the given document '
               'to process the image')

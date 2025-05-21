@@ -70,9 +70,15 @@ class FnCallAgent(Agent):
                                            functions=[func.function for func in self.function_map.values()],
                                            extra_generate_cfg=extra_generate_cfg)
             output: List[Message] = []
+
+            # 迭代1: [Message(content="我")]
+            # 迭代2: [Message(content="我会")]
+            # 迭代3: [Message(content="我会查询")]
+            # 迭代4: [Message(content="我会查询天气", function_call={...完整函数调用...})]  
             for output in output_stream:
                 if output:
                     yield response + output
+
             if output:
                 response.extend(output)
                 messages.extend(output)

@@ -6,12 +6,19 @@ from typing import Optional
 
 from qwen_agent.agents import Assistant
 from qwen_agent.gui import WebUI
+import weave
 
 ROOT_RESOURCE = os.path.join(os.path.dirname(__file__), 'resource')
 
+weave.init("qwen-agents-mcp-sqlite")
+
 
 def init_agent_service():
-    llm_cfg = {'model': 'qwen-max'}
+    llm_cfg = {
+        'api_key': '1870025730743341146',
+        'model': 'qwen-max-latest',# 'qwen-max-latest',
+        'model_server': 'https://aigc.sankuai.com/v1/openai/native',  # base_url, also known as api_base
+    }
     system = ('你扮演一个数据库助手，你具有查询数据库的能力')
     tools = [{
         "mcpServers": {

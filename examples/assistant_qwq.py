@@ -5,24 +5,37 @@ import os
 from qwen_agent.agents import Assistant
 from qwen_agent.gui import WebUI
 from qwen_agent.utils.output_beautify import typewriter_print
+from qwen_agent.log import logger
+
+import weave
+weave.init("Qwen3 Tool-calling")
 
 ROOT_RESOURCE = os.path.join(os.path.dirname(__file__), 'resource')
 
 
 def init_agent_service():
     llm_cfg = {
-        'model': 'qwq-32b',
-        'model_type': 'qwen_dashscope',
+        'api_key': '1870025730743341146',
+        'model': 'qwen3-235b-a22b-meituan', # qwen3-235b-a22b-meituan,qwen-max-latest, QwQ-32B-Friday
+        'model_server': 'https://aigc.sankuai.com/v1/openai/native',  
         'generate_cfg': {
             'fncall_prompt_type': 'nous',
-
-            # This parameter needs to be passed in when the deployed model is an reasoning model (e.g. qwq-32b) and *does not* support the reasoning_content field (e.g. deploying qwq-32b directly with an old version of vLLM)
-            # Add: When the content is `<think>this is the thought</think>this is the answer`
-            # Do not add: When the response has been separated by reasoning_content and content
-            # This parameter will affect the parsing strategy of tool call
-            # 'thought_in_content': True,
-        },
+        }
     }
+
+    # llm_cfg = {
+    #     'model': 'qwq-32b',
+    #     'model_type': 'qwen_dashscope',
+    #     'generate_cfg': {
+    #         'fncall_prompt_type': 'nous',
+
+    #         # This parameter needs to be passed in when the deployed model is an reasoning model (e.g. qwq-32b) and *does not* support the reasoning_content field (e.g. deploying qwq-32b directly with an old version of vLLM)
+    #         # Add: When the content is `<think>this is the thought</think>this is the answer`
+    #         # Do not add: When the response has been separated by reasoning_content and content
+    #         # This parameter will affect the parsing strategy of tool call
+    #         # 'thought_in_content': True,
+    #     },
+    # }
     tools = [
         'image_gen',
         # 'web_search',  # Apply for an apikey here (https://serper.dev) and set it as an environment variable by `export SERPER_API_KEY=xxxxxx`
@@ -44,6 +57,7 @@ def test(query: str = '画一只猫，再画一只狗，最后画他们一起玩
     messages = [{'role': 'user', 'content': query}]
     response_plain_text = ''
     for response in bot.run(messages=messages):
+        print('#####', response)
         response_plain_text = typewriter_print(response, response_plain_text)
 
 
@@ -59,7 +73,9 @@ def app_tui():
         response = []
         response_plain_text = ''
         for response in bot.run(messages=messages):
+            print('#####B', response)
             response_plain_text = typewriter_print(response, response_plain_text)
+            print('#####A', response_plain_text)
         messages.extend(response)
 
 

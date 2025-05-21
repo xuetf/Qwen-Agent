@@ -13,6 +13,7 @@ from qwen_agent.settings import DEFAULT_MAX_INPUT_TOKENS
 from qwen_agent.utils.tokenization_qwen import tokenizer
 from qwen_agent.utils.utils import (extract_text_from_message, format_as_multimodal_message, format_as_text_message,
                                     has_chinese_messages, json_dumps_compact, merge_generate_cfgs, print_traceback)
+import weave
 
 LLM_REGISTRY = {}
 
@@ -185,6 +186,8 @@ class BaseChatModel(ABC):
                 fncall_mode = False
 
         # Note: the preprocessor's behavior could change if it receives function_choice="none"
+
+        logger.debug(f'LLM Input Before Preprocess:\n{pformat([_.model_dump() for _ in messages], indent=2)}')
         messages = self._preprocess_messages(messages, lang=lang, generate_cfg=generate_cfg, functions=functions)
         if not self.support_multimodal_input:
             messages = [format_as_text_message(msg, add_upload_info=False) for msg in messages]
@@ -227,8 +230,9 @@ class BaseChatModel(ABC):
 
         if isinstance(output, list):
             assert not stream
-            logger.debug(f'LLM Output:\n{pformat([_.model_dump() for _ in output], indent=2)}')
+            logger.debug(f'LLM Output Before PostProcess:\n{pformat([_.model_dump() for _ in output], indent=2)}')
             output = self._postprocess_messages(output, fncall_mode=fncall_mode, generate_cfg=generate_cfg)
+            logger.debug(f'LLM Output After PostProcess:\n{pformat([_.model_dump() for _ in output], indent=2)}')
             if not self.support_multimodal_output:
                 output = _format_as_text_messages(messages=output)
             if self.cache:
@@ -351,9 +355,16 @@ class BaseChatModel(ABC):
         generate_cfg: dict,
     ) -> Iterator[List[Message]]:
         pre_msg = []
+
+        # 流式输出，最后1个是最终的结果
         for pre_msg in messages:
-            yield self._postprocess_messages(pre_msg, fncall_mode=fncall_mode, generate_cfg=generate_cfg)
-        logger.debug(f'LLM Output:\n{pformat([_.model_dump() for _ in pre_msg], indent=2)}')
+            preprocess_msg = self._postprocess_messages(pre_msg, fncall_mode=fncall_mode, generate_cfg=generate_cfg)
+            yield preprocess_msg
+
+        logger.debug(f'LLM Output Iterator Before PostProcess:\n{pformat([_.model_dump() for _ in pre_msg], indent=2)}')
+
+        logger.debug(f'LLM Output Iterator After PostProcess:\n{pformat([_.model_dump() for _ in preprocess_msg], indent=2)}')
+
 
     def _convert_messages_to_target_type(self, messages: List[Message],
                                          target_type: str) -> Union[List[Message], List[Dict]]:
