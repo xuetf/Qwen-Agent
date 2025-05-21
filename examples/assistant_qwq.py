@@ -6,7 +6,7 @@ from qwen_agent.agents import Assistant
 from qwen_agent.gui import WebUI
 from qwen_agent.utils.output_beautify import typewriter_print
 from qwen_agent.log import logger
-
+from config import API_KEY, API_URL
 import weave
 weave.init("Qwen3 Tool-calling")
 
@@ -15,9 +15,9 @@ ROOT_RESOURCE = os.path.join(os.path.dirname(__file__), 'resource')
 
 def init_agent_service():
     llm_cfg = {
-        'api_key': '1870025730743341146',
+        'api_key': API_KEY,
         'model': 'qwen3-235b-a22b-meituan', # qwen3-235b-a22b-meituan,qwen-max-latest, QwQ-32B-Friday
-        'model_server': 'https://aigc.sankuai.com/v1/openai/native',  
+        'model_server': API_URL,
         'generate_cfg': {
             'fncall_prompt_type': 'nous',
         }

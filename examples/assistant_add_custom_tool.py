@@ -9,7 +9,7 @@ import json5
 from qwen_agent.agents import Assistant
 from qwen_agent.gui import WebUI
 from qwen_agent.tools.base import BaseTool, register_tool
-
+from config import API_KEY, API_URL
 ROOT_RESOURCE = os.path.join(os.path.dirname(__file__), 'resource')
 
 
@@ -35,9 +35,9 @@ class MyImageGen(BaseTool):
 
 def init_agent_service():
     llm_cfg = {
-        'api_key': '1870025730743341146',
+        'api_key': API_KEY,
         'model': 'deepseek-r1-friday',# 'qwen-max-latest',
-        'model_server': 'https://aigc.sankuai.com/v1/openai/native',  # base_url, also known as api_base
+        'model_server': API_URL,  # base_url, also known as api_base
     }
     system = ("According to the user's request, you first draw a picture and then automatically "
               'run code to download the picture and select an image operation from the given document '
