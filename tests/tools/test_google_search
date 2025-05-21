@@ -1,0 +1,8 @@
+from googlesearch import search
+import pprint
+
+def google_search(query: str, num_results: int = 5):
+    return list(search(query, num_results=num_results, lang='zh-CN'))
+
+
+pprint.pprint(google_search('qwen3 site:github.com', 100))
