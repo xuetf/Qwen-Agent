@@ -5,15 +5,15 @@ from typing import Optional
 
 from qwen_agent.agents import Assistant
 from qwen_agent.gui import WebUI
-
+from config import API_KEY, API_URL
 ROOT_RESOURCE = os.path.join(os.path.dirname(__file__), 'resource')
 
 
 def init_agent_service():
     llm_cfg = {
-        'api_key': '1870025730743341146',
+        'api_key': API_KEY, # mask
         'model': 'qwen-max-latest', # qwen-max-latest, QwQ-32B-Friday
-        'model_server': 'https://aigc.sankuai.com/v1/openai/native',  
+        'model_server': API_URL,  
     }
 
     system = ('你扮演一个天气预报助手，你具有查询天气和画图能力。'
